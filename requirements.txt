@@ -1,0 +1,10 @@
+faker
+flask
+flask-migrate
+flask-restx
+flask-sqlalchemy
+flask-testing
+ipython
+pylint
+python-dotenv
+requests
