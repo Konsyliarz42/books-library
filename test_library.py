@@ -34,7 +34,8 @@ def list_of_books(quantity):
             'title': fake.company(),
             'premiere': str(fake.date()),
             'price': random.random(),
-            'authors': authors_list
+            'authors': authors_list,
+            'client': fake.name() 
         })
 
     return books

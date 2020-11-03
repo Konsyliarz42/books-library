@@ -13,6 +13,7 @@ class Book(database.Model):
     title       = database.Column(database.String(256), nullable=False)
     premiere    = database.Column(database.String(256))
     price       = database.Column(database.Float)
+    client_id   = database.Column(database.Integer, database.ForeignKey('client.id'))
 
     authors = database.relationship(
         "Author",
@@ -20,17 +21,18 @@ class Book(database.Model):
         backref=database.backref('authors', lazy=True),
         lazy="dynamic"
     )
-    
+
     #--------------------------------
     def __str__(self):
-        return f"{self.title} by {self.authors}"
+        return f"Book: {self.title} by {self.authors}"
 
 #----------------------------------------------------------------
 book_model  = api.model('Book',{
-        'title':fields.String(required=True),
-        'premiere':fields.String(),
-        'price':fields.Float(),
-        'authors':fields.List(fields.String())
+    'title':fields.String(required=True),
+    'premiere':fields.String(),
+    'price':fields.Float(),
+    'authors':fields.List(fields.String()),
+    'client_id':fields.Integer()
 })
 
 #================================================================
@@ -41,14 +43,40 @@ class Author(database.Model):
     birth       = database.Column(database.String(256))
     death       = database.Column(database.String(256))
 
+    books = database.relationship(
+        "Book",
+        secondary=books_authors,
+        backref=database.backref('books', lazy=True),
+        lazy="dynamic"
+    )
+
     #--------------------------------
     def __str__(self):
-        return f"{self.first_name} {self.last_name} ({self.birth} - {self.death})"
+        return f"Author: {self.first_name} {self.last_name} ({self.birth} - {self.death})"
 
 #----------------------------------------------------------------
 author_model  = api.model('Author',{
-        'first_name':fields.String(required=True),
-        'last_name':fields.String(required=True),
-        'birth':fields.String(),
-        'death':fields.String()
+    'first_name':fields.String(required=True),
+    'last_name':fields.String(required=True),
+    'birth':fields.String(),
+    'death':fields.String(),
+    'books':fields.List(fields.String())
+})
+
+#================================================================
+class Client(database.Model):
+    id          = database.Column(database.Integer,     primary_key=True)
+    first_name  = database.Column(database.String(256), nullable=False)
+    last_name   = database.Column(database.String(256), nullable=False)
+    books       = database.relationship("Book", backref='book')
+
+    #--------------------------------
+    def __str__(self):
+        return f"Client: {self.first_name} {self.last_name}"
+
+#----------------------------------------------------------------
+client_model  = api.model('Client',{
+    'first_name':fields.String(required=True),
+    'last_name':fields.String(required=True),
+    'books':fields.List(fields.String())
 })

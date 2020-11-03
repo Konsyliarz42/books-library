@@ -13,4 +13,13 @@ migrate     = Migrate(app, database)
 
 from app import routes, models
 
+database.drop_all()
 database.create_all()
+
+@app.shell_context_processor
+def make_shell_context():
+    return {
+        "database": database,
+        "Book": Book,
+        "Author": Author
+    }
