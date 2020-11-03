@@ -11,15 +11,16 @@ api         = Api(app)
 database    = SQLAlchemy(app)
 migrate     = Migrate(app, database)
 
-from app import routes, models
+from app import models
 
-database.drop_all()
-database.create_all()
+#database.drop_all()
+#database.create_all()
 
 @app.shell_context_processor
 def make_shell_context():
     return {
         "database": database,
-        "Book": Book,
-        "Author": Author
+        "Book": models.Book,
+        "Author": models.Author,
+        "Client": models.Client
     }

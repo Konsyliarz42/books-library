@@ -1,13 +1,21 @@
 from app import app, api, database, Resource, request, fields
 from app.models import Book, Author, Client, book_model, author_model, client_model
 from flask import jsonify
+from datetime import datetime
 
 #================================================================
 def add_value_from_form(form, name, last_value=None):
+    if type(last_value) == datetime:
+        last_value = last_value.strftime('%Y-%m-%d')
+
     try:
         value = last_value
         value = form[name]
-    except:
+
+        if name in ['birth', 'death', 'premiere']:
+            value = datetime.strptime(value, '%Y-%m-%d')
+            
+    except KeyError:
         pass
 
     return value
@@ -441,4 +449,4 @@ class ClientsById(Resource):
 
 #================================================================
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)

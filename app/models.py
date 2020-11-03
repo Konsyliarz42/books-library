@@ -11,7 +11,7 @@ books_authors = database.Table(
 class Book(database.Model):
     id          = database.Column(database.Integer,     primary_key=True)
     title       = database.Column(database.String(256), nullable=False)
-    premiere    = database.Column(database.String(256))
+    premiere    = database.Column(database.Date())
     price       = database.Column(database.Float)
     client_id   = database.Column(database.Integer, database.ForeignKey('client.id'))
 
@@ -40,8 +40,8 @@ class Author(database.Model):
     id          = database.Column(database.Integer,     primary_key=True)
     first_name  = database.Column(database.String(256), nullable=False)
     last_name   = database.Column(database.String(256), nullable=False)
-    birth       = database.Column(database.String(256))
-    death       = database.Column(database.String(256))
+    birth       = database.Column(database.Date())
+    death       = database.Column(database.Date())
 
     books = database.relationship(
         "Book",
