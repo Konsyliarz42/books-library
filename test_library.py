@@ -40,6 +40,26 @@ def list_of_books(quantity):
 
     return books
 
+#--------------------------------
+def list_of_clients(quantity):
+    fake    = faker.Faker()
+    clients = list()
+
+    for _ in range(quantity):
+        name    = fake.name().split(' ')
+        books   = list()
+
+        for __ in range(random.randint(0, 19)):
+            books.append(fake.company())
+
+        clients.append({
+            "first_name": name[0],
+            "last_name": name[1],
+            "books": books
+        })
+
+    return clients
+
 #================================================================
 class TestLibrary(TestCase):
     TESTING = True
@@ -85,7 +105,7 @@ class TestLibrary(TestCase):
     # Create a book without optional parameter
     def test_post_book_without_optional(self):
         book        = list_of_books(1)[0]
-        parameters  = ['premiere', 'price', 'authors']
+        parameters  = ['premiere', 'price', 'authors', 'client']
 
         book.pop(parameters[random.randint(0, len(parameters) - 1)])
         response = self.client.post("/books", json=book)
@@ -184,7 +204,7 @@ class TestLibrary(TestCase):
         parameters  = ['birth', 'death']
 
         author.pop(parameters[random.randint(0, len(parameters) - 1)])
-        response    = self.client.post("/authors", json=author)
+        response = self.client.post("/authors", json=author)
 
         self.assertEqual(response.status_code, 201)
 
@@ -194,7 +214,7 @@ class TestLibrary(TestCase):
         parameters  = ['first_name', 'last_name']
 
         author.pop(parameters[random.randint(0, len(parameters) - 1)])
-        response    = self.client.post("/authors", json=author)
+        response = self.client.post("/authors", json=author)
 
         self.assertEqual(response.status_code, 400)
 
@@ -257,6 +277,102 @@ class TestLibrary(TestCase):
     # Delete author when database is empty
     def test_delete_author_empty_database(self):
         response = self.client.delete("/authors/1")
+        self.assertEqual(response.status_code, 404)
+
+#----------------------------------------------------------------
+
+    # Get all clients from database
+    def test_get_clients(self):
+        for client in list_of_clients(30):
+            self.client.post("/clients", json=client)
+
+        response = self.client.get("/clients")
+        self.assertEqual(response.status_code, 200)
+
+    # Add client to database
+    def test_post_client(self):
+        client      = list_of_clients(1)[0]
+        response    = self.client.post("/clients", json=client)
+
+        self.assertEqual(response.status_code, 201)
+
+    # Add client do database without optional parameters
+    def test_post_client_without_optional(self):
+        client          = list_of_clients(1)[0]
+        client['books'] = []
+        response        = self.client.post("/clients", json=client)
+
+        self.assertEqual(response.status_code, 201)
+
+    # Add client do database without requirement parameters
+    def test_post_client_without_requirement(self):
+        client          = list_of_clients(1)[0]
+        parameters      = ['first_name', 'last_name']
+
+        client.pop(parameters[random.randint(0, len(parameters) - 1)])
+        response = self.client.post("/clients", json=client)
+
+        self.assertEqual(response.status_code, 400)
+
+    # Delete all clients
+    def test_delete_clients(self):
+        for client in list_of_clients(30):
+            self.client.post("/clients", json=client)
+
+        response = self.client.delete("/clients")
+        self.assertEqual(response.status_code, 200)
+
+    # Get client by id
+    def test_get_client(self):
+        client = list_of_clients(1)[0]
+        self.client.post("/clients", json=client)
+
+        response = self.client.get("/clients/1")
+        self.assertEqual(response.status_code, 200)
+
+    # Get client by id when database is empty
+    def test_get_client_empty_database(self):
+        response = self.client.get("/clients/1")
+        self.assertEqual(response.status_code, 404)
+
+    # Modifide client
+    def test_put_client(self):
+        client = list_of_clients(1)[0]
+        self.client.post("/clients", json=client)
+
+        client      = list_of_clients(1)[0]
+        response    = self.client.put("/clients/1", json=client)
+
+        self.assertEqual(response.status_code, 200)
+
+    # Modifide client without all parameters
+    def test_put_client_without_parameters(self):
+        client = list_of_clients(1)[0]
+        self.client.post("/clients", json=client)
+
+        client      = {}
+        response    = self.client.put("/clients/1", json=client)
+
+        self.assertEqual(response.status_code, 200)
+
+    # Modifide client when database is empty
+    def test_put_client_empty_database(self):
+        client      = list_of_clients(1)[0]
+        response    = self.client.put("/clients/1", json=client)
+
+        self.assertEqual(response.status_code, 404)
+
+    # Delete client
+    def test_delete_client(self):
+        client = list_of_clients(1)[0]
+        self.client.post("/clients", json=client)
+
+        response = self.client.delete("/clients/1")
+        self.assertEqual(response.status_code, 200)
+
+    # Delete client when database is empty
+    def test_delete_client_empty_database(self):
+        response = self.client.delete("/clients/1")
         self.assertEqual(response.status_code, 404)
 
 #================================================================
