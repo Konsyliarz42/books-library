@@ -13,6 +13,7 @@ app.config.from_object(Config)
 routes.api.init_app(app)
 models.database.init_app(app)
 migrate = Migrate(app, models.database)
+migrate.init_app(app, models.database)
 
 
 @app.shell_context_processor

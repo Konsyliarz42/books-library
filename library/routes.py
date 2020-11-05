@@ -21,6 +21,8 @@ def add_value_from_form(form, name, last_value=None):
             
     except KeyError:
         pass
+    except ValueError:
+        return None
 
     return value
 
