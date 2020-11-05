@@ -1,8 +1,8 @@
 import unittest, faker, random
-from flask import Flask
 from flask_testing import TestCase
 
 from library import database, app
+
 
 #================================================================
 def list_of_authors(quantity):
